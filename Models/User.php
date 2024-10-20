@@ -2,7 +2,9 @@
 
 namespace Memento;
 
-require_once('Models\Connexion.php');
+use PDO;
+
+require_once('Connexion.php');
 
 class User extends Connexion
 {
@@ -13,6 +15,7 @@ class User extends Connexion
     protected $lastname;
     protected $login;
     protected $password;
+    protected $connected;
 
     public function __construct()
     {
@@ -22,15 +25,16 @@ class User extends Connexion
         $this->lastname = '';
         $this->login = '';
         $this->password = '';
+        $this->connected= false;
 
     }
 
-    public function getId(): null
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(null $id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -73,6 +77,51 @@ class User extends Connexion
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public function register(string $firstname,string $lastname,string $login, string $password)
+    {
+        $this->setLogin($login);
+        $this->setPassword($password);
+        $this->setFirstname($firstname);
+        $this->setLastname($lastname);
+        $insert = $this->bdd->prepare('INSERT INTO User (login, password,firstname,lastname) VALUES (?, ?, ?, ?)');
+        $insert->execute(array($this->login, $this->password, $this->firstname, $this->lastname));
+        $this->id =  $this->bdd->lastInsertId();
+        return true;
+    }
+
+    public function connect(string $login, string $password) : void
+    {
+        $this->setLogin($login);
+        $this->setPassword($password);
+        if(!empty($this->login) && !empty($this->password)) {
+            $query = $this->bdd->prepare('SELECT *  FROM User WHERE login= ? AND password= ?');
+            $query->execute([$this->login, $this->password]);
+            $userDetail = $query->fetch(PDO::FETCH_ASSOC);
+            foreach ($userDetail as  $index => $value)
+            {
+                $this->$index = $value;
+            }
+            $this->connected = true;
+        }
+    }
+
+    public function getConnected()
+    {
+        return $this->connected;
+    }
+
+    public function getUserfromId(int $id)
+    {
+        $query = $this->bdd->prepare("SELECT id, firstname, lastname, login, password  FROM User WHERE id=?");
+        $query->execute([$id]);
+        $userDetail = $query->fetch(PDO::FETCH_ASSOC);
+        foreach ($userDetail as  $index => $value)
+        {
+            $this->$index = $value;
+        }
+        return $this;
     }
 
 

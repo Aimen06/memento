@@ -1,6 +1,11 @@
 <?php
 
 namespace Memento;
+
+
+use PDO;
+use PDOException;
+
 class Connexion
 {
     protected $bdd;

@@ -2,7 +2,10 @@
 
 namespace Memento;
 
-require_once('Models\Connexion.php');
+use PDO;
+
+
+require_once('Connexion.php');
 
 class Card extends Connexion
 {
@@ -45,7 +48,7 @@ class Card extends Connexion
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -53,7 +56,7 @@ class Card extends Connexion
     /**
      * @return string
      */
-    public function getImage(): int
+    public function getImage(): string
     {
         return $this->image;
     }
@@ -65,6 +68,19 @@ class Card extends Connexion
     {
         $this->image = $image;
     }
+
+    public function getCardfromId(string $id)
+    {
+        $query = $this->bdd->prepare("SELECT id, name, image  FROM Card WHERE id=?");
+        $query->execute([intval($id)]);
+        $cardDetail = $query->fetch(PDO::FETCH_ASSOC);
+        foreach ($cardDetail as  $index => $value)
+        {
+            $this->$index = $value;
+        }
+        return $this;
+    }
+
 
 
 }
