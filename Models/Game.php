@@ -130,16 +130,12 @@ class Game extends Connexion
         return $this;
     }
 
-    public function getGamefromPaire(int $nbPair)
+    public function getAllGamefromPaire(int $nbPair)
     {
-        $query = $this->bdd->prepare("SELECT id, nb_paire, nb_tour, user_id, date, is_finished  FROM Game WHERE nb_paire=? ORDER BY nb_tour ASC");
-        $query->execute([$nbPair]);
-        $gameDetail = $query->fetch(PDO::FETCH_ASSOC);
-        foreach ($gameDetail as  $index => $value)
-        {
-            $this->$index = $value;
-        }
-        return $this;
+        $query = $this->bdd->prepare("SELECT firstname, lastname,  nb_tour, date  FROM Game  INNER JOIN User ON Game.user_id = User.id WHERE nb_paire=? And is_finished = ? ORDER BY nb_tour ASC");
+        $query->execute([$nbPair, 1]);
+        return  $query->fetchAll(PDO::FETCH_ASSOC);
+
     }
 
 

@@ -13,16 +13,24 @@ $_SESSION['cardPlayed'] = [];
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Memento|Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
-    <h1>Memonto</h1>
     <nav>
         <ul>
-            <li><a href="login.php">Se connecter</a></li>
-            <li><a href="register.php">S'enregistrer</a></li>
-            <li><a href="register.php">Nouveau Jeu</li>
-            <li><a href="register.php"></a></li>
+
+            <li><a href="disconnect.php">Se déconnecter</a></li>
+            <li><a href="topscore.php">Classement</a></li>
+            <?php
+            if (!empty($_SESSION['gamer_id'])) {
+                echo     '<li><a href="login.php">Se connecter</a></li>';
+                echo  "<li><a href='register.php'>S'enregistrer</a></li>";
+            }
+            ?>
         </ul>
     </nav>
 </header>

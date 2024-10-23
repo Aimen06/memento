@@ -8,16 +8,23 @@
     <meta name="viewport" content="width=device-width" />
     <title>Memento|Playing</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
-    <h1>Memonto</h1>
     <nav>
         <ul>
-            <li><a href="login.php">Se connecter</a></li>
-            <li><a href="register.php">S'enregistrer</a></li>
-            <li><a href="register.php">Nouveau Jeu</li>
-            <li><a href="register.php"></a></li>
+
+            <li><a href="disconnect.php">Se déconnecter</a></li>
+            <li><a href="topscore.php">Classement</a></li>
+            <?php
+            if (!isset($_SESSION['gamer_id'])) {
+            echo     '<li><a href="login.php">Se connecter</a></li>';
+           echo  "<li><a href='register.php'>S'enregistrer</a></li>";
+            }
+            ?>
         </ul>
     </nav>
 </header>
@@ -39,20 +46,19 @@ if (isset($_SESSION['gamer_id']) && $_SESSION['nbpaire']) {
         $gameFinished->setNbTour($_SESSION['tour']);
         $gameFinished->setIsFinished(1);
         $gameFinished->setUserId($_SESSION['gamer_id']);
+        $gameFinished->setNbPaire($_SESSION['nbpaire']);
         $gameFinished->save();
+        $_SESSION['isFinish'] = $gameFinished->getIsFinished();
         header('Location: topscore.php');
     }
     $gamer = new User();
     $gamer->getUserfromId($_SESSION['gamer_id']);
     $_SESSION['firstname'] =  $gamer->getFirstname();
     $_SESSION['lastname'] = $gamer->getLastname();
-    echo 'Partie de '. $gamer->getFirstname() . '  ' .$gamer->getLastname() . ' avec ' . $_SESSION['nbpaire'] . 'paires <br/><br/>';
-    echo 'TOur: ' . $_SESSION['tour'] . '<br/>';
-    echo 'pair find:' .$_SESSION['pairFind'] .'<br/><br/>' ;
-    echo 'carte selected:' .$_SESSION['cardSelected'] .'<br/><br/>' ;
-    echo ' cartes utilise :';
-    echo '<br/><br/>' ;
-    echo '<br/><br/>' ;
+    echo '<h2>Partie de '. $gamer->getFirstname() . '  ' .$gamer->getLastname() . ' avec ' . $_SESSION['nbpaire'] . 'paires </h2><br/><br/>';
+    echo 'Nombre de Tour: ' . $_SESSION['tour'] . '<br/>';
+    echo 'Nombre de paire trouvée: ' .$_SESSION['pairFind'] .'<br/><br/>' ;
+
     if ($_SESSION['tour'] == 0) {
         $game = new Game();
         $cardGame = $game->create($_SESSION['gamer_id'],$_SESSION['nbpaire']);
@@ -69,11 +75,10 @@ if (isset($_SESSION['gamer_id']) && $_SESSION['nbpaire']) {
     echo '<div class="card-wrapper">';
     for($j= 0; $j<count($_SESSION['CardList']); $j++) {
         $blur = (in_array(intval($_SESSION['CardList'][$j]),$_SESSION['cardsFound'])) ? 'blur' : '';
-        $url = (in_array(intval($_SESSION['CardList'][$j]),$_SESSION['cardsFound'])) ? 'blur' : '';
+        $url = (in_array(intval($_SESSION['CardList'][$j]),$_SESSION['cardsFound'])) ? '' : 'tour.php?id='.$_SESSION['CardList'][$j].'';
         $pathImage =  ($_SESSION['tour'] != 0 && ($_SESSION['CardList'][$j] == $_SESSION['cardSelected']) || (in_array(intval($_SESSION['CardList'][$j]) ,$_SESSION['cardsFound']))) ? intval($_SESSION['CardList'][$j]) : 'back';
-        echo '<a href="tour.php?id='.$_SESSION['CardList'][$j].'"><div class="card '. $blur. '" id="'. $_SESSION['CardList'][$j]. '">';
+        echo '<a href="'. $url .'"><div class="card '. $blur. '" id="'. $_SESSION['CardList'][$j]. '">';
         echo  '<img src="../images/carte/' .  $pathImage . '.png'. '" alt="' . 'image '. intval($_SESSION['CardList'][$j]) .'"></div></a>';
-
     }
 
 } else {
